@@ -9,7 +9,7 @@ model:
   num_classes: 10
   num_batches: 256
   batch_size: 128
-  epochs: 3
+  epochs: 100
   starting_epoch: 0
   latent_dim: 100
   embedding_dim: 50
