@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Tuple
 from src.model.classes.sample_processor import SampleProcessor
 from src.model.functions.inception_score import calculate_inception_score
+from src.model.functions.frechet_inception_distance import calculate_fid
 
 
 @dataclass
@@ -42,12 +43,13 @@ class PerformanceProcessor:
         )
 
         inception_score = calculate_inception_score(X_fake)
+        fid_score = calculate_fid(X_real, X_fake)
 
         self.print_performance(
-            epoch, acc_real, acc_fake, g_loss, d_loss, inception_score
+            epoch, acc_real, acc_fake, g_loss, d_loss, inception_score, fid_score
         )
         self.save_performance_to_csv(
-            epoch, acc_real, acc_fake, g_loss, d_loss, inception_score
+            epoch, acc_real, acc_fake, g_loss, d_loss, inception_score, fid_score
         )
         self.save_plot(X_fake, epoch, acc_real, acc_fake)
         self.save_models(epoch, generator_model, discriminator_model)
@@ -60,10 +62,11 @@ class PerformanceProcessor:
         g_loss: float,
         d_loss: float,
         inception_score: float,
+        fid_score: float,
     ) -> None:
         """Print the performance of the discriminator."""
         print(
-            "epoch: %03d, acc_real: %.02d%%, acc_fake: %.02d%%, d=%.3f, g=%.3f, IS=%.3f"
+            "epoch: %03d, acc_real: %.02d%%, acc_fake: %.02d%%, d=%.3f, g=%.3f, IS=%.3f, FID=%.3f"
             % (
                 epoch + 1,
                 round(acc_real, 2) * 100,
@@ -71,6 +74,7 @@ class PerformanceProcessor:
                 g_loss,
                 d_loss,
                 inception_score,
+                fid_score,
             )
         )
 
@@ -82,6 +86,7 @@ class PerformanceProcessor:
         g_loss: float,
         d_loss: float,
         inception_score: float,
+        fid_score: float,
     ) -> None:
         """Save the performance of the discriminator to a CSV file."""
         csv_path = f"{self.save_dir}/Model_Evaluation.csv"
@@ -101,6 +106,7 @@ class PerformanceProcessor:
                     "G_Loss",
                     "D_Loss",
                     "Inception_Score",
+                    "FID_Score",
                 ],
             )
             if not file_exists:
@@ -113,6 +119,7 @@ class PerformanceProcessor:
                     "G_Loss": g_loss,
                     "D_Loss": d_loss,
                     "Inception_Score": inception_score,
+                    "FID_Score": fid_score,
                 }
             )
 
