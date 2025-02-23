@@ -35,6 +35,10 @@ To install the required dependencies, run the following command:
 pip install -r requirements.txt
 ```
 
+## Configuration
+
+The configuration file `config.yaml` contains various settings and hyperparameters for the project. You can find this file in the root directory of the repository. Modify this file to adjust the behavior of the cGAN model.
+
 ## Usage
 
 Run the main script:
