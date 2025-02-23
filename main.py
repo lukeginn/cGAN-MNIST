@@ -2,12 +2,12 @@ from config import paths
 from src.utils.setup import Setup
 from src.data.data_reader import DataReader
 from src.data.data_processor import DataProcessor
-from src.model.sample_processor import SampleProcessor
-from src.model.performance_processor import PerformanceProcessor
-from src.model.discriminator import Discriminator
-from src.model.generator import Generator
-from src.model.gan_compiler import GANCompiler
-from src.model.gan_trainer import GANTrainer
+from src.model.classes.sample_processor import SampleProcessor
+from src.model.classes.performance_processor import PerformanceProcessor
+from src.model.classes.discriminator import Discriminator
+from src.model.classes.generator import Generator
+from src.model.classes.gan_compiler import GANCompiler
+from src.model.classes.gan_trainer import GANTrainer
 
 setup_instance = Setup()
 config = setup_instance.config

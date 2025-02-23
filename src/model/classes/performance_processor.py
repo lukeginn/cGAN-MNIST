@@ -5,7 +5,8 @@ import matplotlib.pyplot as pyplot
 from keras.models import Model
 from dataclasses import dataclass
 from typing import Tuple
-from src.model.sample_processor import SampleProcessor
+from src.model.classes.sample_processor import SampleProcessor
+from src.model.functions.inception_score import calculate_inception_score
 
 
 @dataclass
@@ -40,28 +41,47 @@ class PerformanceProcessor:
             [X_fake, X_fake_labels], y_fake, verbose=0
         )
 
-        self.print_performance(epoch, acc_real, acc_fake, g_loss, d_loss)
-        self.save_performance_to_csv(epoch, acc_real, acc_fake, g_loss, d_loss)
+        inception_score = calculate_inception_score(X_fake)
+
+        self.print_performance(
+            epoch, acc_real, acc_fake, g_loss, d_loss, inception_score
+        )
+        self.save_performance_to_csv(
+            epoch, acc_real, acc_fake, g_loss, d_loss, inception_score
+        )
         self.save_plot(X_fake, epoch, acc_real, acc_fake)
         self.save_models(epoch, generator_model, discriminator_model)
 
     def print_performance(
-        self, epoch: int, acc_real: float, acc_fake: float, g_loss: float, d_loss: float
+        self,
+        epoch: int,
+        acc_real: float,
+        acc_fake: float,
+        g_loss: float,
+        d_loss: float,
+        inception_score: float,
     ) -> None:
         """Print the performance of the discriminator."""
         print(
-            "epoch: %03d, acc_real: %.02d%%, acc_fake: %.02d%%, d=%.3f, g=%.3f"
+            "epoch: %03d, acc_real: %.02d%%, acc_fake: %.02d%%, d=%.3f, g=%.3f, IS=%.3f"
             % (
                 epoch + 1,
                 round(acc_real, 2) * 100,
                 round(acc_fake, 2) * 100,
                 g_loss,
                 d_loss,
+                inception_score,
             )
         )
 
     def save_performance_to_csv(
-        self, epoch: int, acc_real: float, acc_fake: float, g_loss: float, d_loss: float
+        self,
+        epoch: int,
+        acc_real: float,
+        acc_fake: float,
+        g_loss: float,
+        d_loss: float,
+        inception_score: float,
     ) -> None:
         """Save the performance of the discriminator to a CSV file."""
         csv_path = f"{self.save_dir}/Discriminator_Evaluation.csv"
@@ -69,7 +89,14 @@ class PerformanceProcessor:
         with open(csv_path, "a", newline="") as csvfile:
             writer = csv.DictWriter(
                 csvfile,
-                fieldnames=["Epoch", "Acc_Real", "Acc_Fake", "G_Loss", "D_Loss"],
+                fieldnames=[
+                    "Epoch",
+                    "Acc_Real",
+                    "Acc_Fake",
+                    "G_Loss",
+                    "D_Loss",
+                    "Inception_Score",
+                ],
             )
             if not file_exists:
                 writer.writeheader()
@@ -80,6 +107,7 @@ class PerformanceProcessor:
                     "Acc_Fake": str(acc_fake),
                     "G_Loss": g_loss,
                     "D_Loss": d_loss,
+                    "Inception_Score": inception_score,
                 }
             )
 
