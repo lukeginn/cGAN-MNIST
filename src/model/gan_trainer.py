@@ -9,21 +9,21 @@ class GANTrainer:
     generator_model: Model
     discriminator_model: Model
     gan_model: Model
+    sample_processor: Any
+    performance_processor: Any
     images: np.ndarray
     labels: np.ndarray
     latent_dim: int
-    sample_processor: Any
-    performance_processor: Any
     start_epoch: int = 0
-    n_epochs: int = 2  # 100
-    n_batch: int = 256
+    num_epochs: int = 100
+    num_batch: int = 256
 
     def train_model(self) -> None:
         """Train the GAN model."""
-        bat_per_epo = int(self.images.shape[0] / self.n_batch)
-        half_batch = int(self.n_batch / 2)
+        bat_per_epo = int(self.images.shape[0] / self.num_batch)
+        half_batch = int(self.num_batch / 2)
 
-        for epoch in range(self.start_epoch, self.n_epochs):
+        for epoch in range(self.start_epoch, self.num_epochs):
             for batch in range(bat_per_epo):
                 self._train_discriminator(half_batch)
                 self._train_generator()
@@ -62,8 +62,8 @@ class GANTrainer:
     def _train_generator(self) -> None:
         """Train the generator model."""
         [X_gan, X_gan_labels] = self.sample_processor.latent_points(
-            self.n_batch, self.latent_dim
+            self.num_batch, self.latent_dim
         )
-        y_gan = np.ones((self.n_batch, 1))
+        y_gan = np.ones((self.num_batch, 1))
 
         self.g_loss, _ = self.gan_model.train_on_batch([X_gan, X_gan_labels], y_gan)

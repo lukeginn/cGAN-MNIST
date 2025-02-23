@@ -7,6 +7,8 @@ from dataclasses import dataclass
 class GANCompiler:
     generator_model: Model
     discriminator_model: Model
+    adam_lr: float = 0.0002
+    adam_beta_1: float = 0.5
     model: Model = None
 
     def __post_init__(self):
@@ -29,7 +31,7 @@ class GANCompiler:
     def _compile_model(self, model: Model) -> None:
         """Compile the GAN model with the specified optimizer, loss, and metrics."""
         model.compile(
-            optimizer=Adam(lr=0.0002, beta_1=0.5),
+            optimizer=Adam(lr=self.adam_lr, beta_1=self.adam_beta_1),
             loss="binary_crossentropy",
             metrics=["accuracy"],
         )

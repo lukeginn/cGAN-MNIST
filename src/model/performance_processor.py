@@ -11,6 +11,7 @@ from src.model.sample_processor import SampleProcessor
 class PerformanceProcessor:
     sample_processor: SampleProcessor
     save_dir: str
+    latent_dim: int = 100
 
     def summarize_performance(
         self,
@@ -21,7 +22,6 @@ class PerformanceProcessor:
         d_loss: float,
         images: np.ndarray,
         labels: np.ndarray,
-        latent_dim: int,
         n_samples: int = 100,
     ) -> None:
         """Summarize the performance of the GAN model."""
@@ -33,7 +33,7 @@ class PerformanceProcessor:
         )
 
         [X_fake, X_fake_labels], y_fake = self.sample_processor.fake_samples(
-            generator_model, latent_dim, n_samples
+            generator_model, self.latent_dim, n_samples
         )
         _, acc_fake = discriminator_model.evaluate(
             [X_fake, X_fake_labels], y_fake, verbose=0

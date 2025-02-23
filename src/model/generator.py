@@ -17,8 +17,12 @@ from typing import Tuple
 
 @dataclass
 class Generator:
-    latent_dim: int
     n_classes: int = 10
+    batch_size: int = 128
+    latent_dim: int = 100
+    embedding_dim: int = 50
+    LeakyReLU_alpha: float = 0.2
+
     model: Model = field(init=False)
 
     def __post_init__(self):
@@ -45,17 +49,19 @@ class Generator:
 
     def _create_latent_branch(self, latent_input: Input) -> Model:
         """Create the latent branch of the generator."""
-        latent_branch = SpectralNormalization(Dense(128 * 3 * 3))(latent_input)
-        latent_branch = LeakyReLU(alpha=0.2)(latent_branch)
+        latent_branch = SpectralNormalization(Dense(self.batch_size * 3 * 3))(
+            latent_input
+        )
+        latent_branch = LeakyReLU(alpha=self.LeakyReLU_alpha)(latent_branch)
         latent_branch = BatchNormalization()(latent_branch)
-        latent_branch = Reshape((3, 3, 128))(latent_branch)
+        latent_branch = Reshape((3, 3, self.batch_size))(latent_branch)
         return latent_branch
 
     def _create_label_branch(self, label_input: Input) -> Model:
         """Create the label branch of the generator."""
-        label_branch = Embedding(self.n_classes, 50)(label_input)
+        label_branch = Embedding(self.n_classes, self.embedding_dim)(label_input)
         label_branch = SpectralNormalization(Dense(3 * 3))(label_branch)
-        label_branch = LeakyReLU(alpha=0.2)(label_branch)
+        label_branch = LeakyReLU(alpha=self.LeakyReLU_alpha)(label_branch)
         label_branch = BatchNormalization()(label_branch)
         label_branch = Reshape((3, 3, 1))(label_branch)
         return label_branch
@@ -67,19 +73,19 @@ class Generator:
     def _add_conv_layers(self, neural_net: Model) -> Model:
         """Add convolutional layers to the neural network."""
         neural_net = SpectralNormalization(
-            Conv2DTranspose(128, (4, 4), strides=(1, 1))
+            Conv2DTranspose(self.batch_size, (4, 4), strides=(1, 1))
         )(neural_net)
-        neural_net = LeakyReLU(alpha=0.2)(neural_net)
+        neural_net = LeakyReLU(alpha=self.LeakyReLU_alpha)(neural_net)
         neural_net = BatchNormalization()(neural_net)
         neural_net = SpectralNormalization(
-            Conv2DTranspose(128, (4, 4), strides=(2, 2))
+            Conv2DTranspose(self.batch_size, (4, 4), strides=(2, 2))
         )(neural_net)
-        neural_net = LeakyReLU(alpha=0.2)(neural_net)
+        neural_net = LeakyReLU(alpha=self.LeakyReLU_alpha)(neural_net)
         neural_net = BatchNormalization()(neural_net)
         neural_net = SpectralNormalization(
-            Conv2DTranspose(128, (5, 5), strides=(2, 2), padding="same")
+            Conv2DTranspose(self.batch_size, (5, 5), strides=(2, 2), padding="same")
         )(neural_net)
-        neural_net = LeakyReLU(alpha=0.2)(neural_net)
+        neural_net = LeakyReLU(alpha=self.LeakyReLU_alpha)(neural_net)
         neural_net = BatchNormalization()(neural_net)
         neural_net = SpectralNormalization(
             Conv2D(1, (10, 10), activation="sigmoid", padding="same")

@@ -4,6 +4,9 @@ import numpy as np
 
 @dataclass
 class DataProcessor:
+    image_height: int = 28
+    image_width: int = 28
+    num_channels: int = 1
 
     def run(self, data) -> tuple:
         train_images, train_labels, test_images, test_labels = (
@@ -33,4 +36,6 @@ class DataProcessor:
         # 28: The width of the image
         # 1: The number of color channels in the image (1 for grayscale images)
         # The images are reshaped to 4D arrays, as required by Keras
-        return images.reshape((-1, 28, 28, 1))
+        return images.reshape(
+            (-1, self.image_height, self.image_width, self.num_channels)
+        )
