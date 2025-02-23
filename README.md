@@ -60,6 +60,17 @@ python main.py
 - `gan_compiler.py`: Compiles the GAN model.
 - `gan_trainer.py`: Trains the GAN model.
 
+## Model Evaluation
+
+Evaluating a GAN throughout the training is typically trickier than a standard image recognition or image generation project. This is because GANs involve two models (the Generator and the Discriminator) that are trained simultaneously in a competitive setting, making it challenging to assess their performance independently.
+
+Here we evaluate the following metrics:
+
+3. **Discriminator Loss**: Indicates how well the Discriminator is distinguishing between real and fake images.
+4. **Generator Loss**: Indicates how well the Generator is fooling the Discriminator.
+
+Importantly, we produce sample plots at each epoch to visually inspect how the learning is proceeding. We can visually inspect if overfitting is occurring in the GAN or if the quality of image generation has plateaued. These visual inspections are crucial for understanding the qualitative aspects of the generated images and ensuring that the GAN is learning effectively.
+
 ## License
 
 This project is licensed under the MIT License.

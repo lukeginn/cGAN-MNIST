@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import csv
+import matplotlib.pyplot as pyplot
 from keras.models import Model
 from dataclasses import dataclass
 from typing import Tuple
@@ -91,15 +92,14 @@ class PerformanceProcessor:
         n: int = 10,
     ) -> None:
         """Save a plot of the generated images."""
-        print("fix later")
-        #    for i in range(n * n):
-        #        pyplot.subplot(n, n, 1 + i)
-        #        pyplot.axis('off')
-        #        pyplot.imshow(examples[i, :, :, 0], cmap='gray_r')
+        for i in range(n * n):
+            pyplot.subplot(n, n, 1 + i)
+            pyplot.axis("off")
+            pyplot.imshow(examples[i, :, :, 0], cmap="gray_r")
 
-        #    filename = f'{self.save_dir}/generated_plot_e{epoch+1:03d}_acc_real_{round(acc_real,2)*100:.02d}%_acc_fake_{round(acc_fake,2)*100:.02d}%.png'
-        #    pyplot.savefig(filename)
-        #    pyplot.close()
+        filename = f"{self.save_dir}/generated_plot_e{epoch+1:03d}_acc_real_{round(acc_real,2)*100:.2f}%_acc_fake_{round(acc_fake,2)*100:.2f}%.png"
+        pyplot.savefig(filename)
+        pyplot.close()
 
     def save_models(
         self, epoch: int, generator_model: Model, discriminator_model: Model
