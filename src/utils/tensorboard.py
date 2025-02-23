@@ -16,6 +16,10 @@ def log_metrics_to_tensorboard(
     epoch: int,
     g_loss: float,
     d_loss: float,
+    acc_real: float,
+    acc_fake: float,
+    inception_score: float,
+    fid_score: float,
     new_lr: float,
     tensorboard_callback: TensorBoard,
     file_writer: tf.summary.SummaryWriter,
@@ -24,5 +28,9 @@ def log_metrics_to_tensorboard(
     with file_writer.as_default():
         tf.summary.scalar("Generator Loss", g_loss, step=epoch)
         tf.summary.scalar("Discriminator Loss", d_loss, step=epoch)
+        tf.summary.scalar("Accuracy Real", acc_real, step=epoch)
+        tf.summary.scalar("Accuracy Fake", acc_fake, step=epoch)
+        tf.summary.scalar("Inception Score", inception_score, step=epoch)
+        tf.summary.scalar("FID Score", fid_score, step=epoch)
         tf.summary.scalar("Learning Rate", new_lr, step=epoch)
     file_writer.flush()

@@ -34,6 +34,7 @@ class PerformanceProcessor:
         _, acc_real = discriminator_model.evaluate(
             [X_real, X_real_labels], y_real, verbose=0
         )
+        acc_real *= 100
 
         [X_fake, X_fake_labels], y_fake = self.sample_processor.fake_samples(
             generator_model, self.latent_dim, n_samples
@@ -41,6 +42,7 @@ class PerformanceProcessor:
         _, acc_fake = discriminator_model.evaluate(
             [X_fake, X_fake_labels], y_fake, verbose=0
         )
+        acc_fake *= 100
 
         inception_score = calculate_inception_score(X_fake)
         fid_score = calculate_fid(X_real, X_fake)
@@ -53,6 +55,8 @@ class PerformanceProcessor:
         )
         self.save_plot(X_fake, epoch, acc_real, acc_fake)
         self.save_models(epoch, generator_model, discriminator_model)
+
+        return acc_real, acc_fake, inception_score, fid_score
 
     def print_performance(
         self,
@@ -137,7 +141,7 @@ class PerformanceProcessor:
             pyplot.axis("off")
             pyplot.imshow(examples[i, :, :, 0], cmap="gray_r")
 
-        filename = f"{self.save_dir}/generated_plot_e{epoch+1:03d}_acc_real_{round(acc_real,2)*100:.2f}%_acc_fake_{round(acc_fake,2)*100:.2f}%.png"
+        filename = f"{self.save_dir}/generated_plot_e{epoch+1:03d}.png"
         pyplot.savefig(filename)
         pyplot.close()
 

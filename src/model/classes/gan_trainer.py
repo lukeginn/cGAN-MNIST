@@ -36,15 +36,17 @@ class GANTrainer:
 
                 print(f"Epoch: {epoch + 1}, Batch_No: {batch + 1}/{bat_per_epo}")
 
-            self.performance_processor.summarize_performance(
-                epoch,
-                self.generator_model,
-                self.discriminator_model,
-                self.g_loss,
-                self.d_loss,
-                self.images,
-                self.labels,
-                self.latent_dim,
+            acc_real, acc_fake, inception_score, fid_score = (
+                self.performance_processor.summarize_performance(
+                    epoch,
+                    self.generator_model,
+                    self.discriminator_model,
+                    self.g_loss,
+                    self.d_loss,
+                    self.images,
+                    self.labels,
+                    self.latent_dim,
+                )
             )
 
             # Update learning rate
@@ -55,6 +57,10 @@ class GANTrainer:
                 epoch,
                 self.g_loss,
                 self.d_loss,
+                acc_real,
+                acc_fake,
+                inception_score,
+                fid_score,
                 new_lr,
                 tensorboard_callback,
                 file_writer,
