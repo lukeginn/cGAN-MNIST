@@ -84,7 +84,12 @@ class PerformanceProcessor:
         inception_score: float,
     ) -> None:
         """Save the performance of the discriminator to a CSV file."""
-        csv_path = f"{self.save_dir}/Discriminator_Evaluation.csv"
+        csv_path = f"{self.save_dir}/Model_Evaluation.csv"
+
+        # Delete the file if starting a new model
+        if epoch == 0 and os.path.isfile(csv_path):
+            os.remove(csv_path)
+
         file_exists = os.path.isfile(csv_path)
         with open(csv_path, "a", newline="") as csvfile:
             writer = csv.DictWriter(
