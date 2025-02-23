@@ -60,6 +60,89 @@ python main.py
 - `gan_compiler.py`: Compiles the GAN model.
 - `gan_trainer.py`: Trains the GAN model.
 
+## Model Architecture
+
+### Discriminator
+
+The discriminator neural network architecture in the provided code is designed to distinguish between real and generated images. Here's a summary of its architecture and the purpose of each layer:
+
+**Inputs:**
+- **Image Input:** Shape (28, 28, 1) for grayscale images.
+- **Label Input:** Shape (1) for class labels.
+
+**Label Branch:**
+- **Embedding:** Converts class labels into dense vectors of dimension 50.
+- **Dense:** Transforms the embedding to match the image dimensions (28 * 28).
+- **Reshape:** Reshapes the dense output to (28, 28, 1).
+
+**Merge Branches:**
+- **Concatenate:** Merges the image input and label branch along the channel dimension.
+
+**Convolutional Layers:**
+- **Conv2D with SpectralNormalization:** Applies convolution with spectral normalization to stabilize training.
+- **LeakyReLU:** Activation function with a small slope for negative values (alpha=0.2).
+- **BatchNormalization:** Normalizes the output of the previous layer to improve training stability.
+- **MaxPooling2D:** Downsamples the feature maps by taking the maximum value over a 2x2 window.
+- **SpatialDropout2D:** Randomly drops entire channels to prevent overfitting (rate=0.5).
+
+This sequence is repeated with additional convolutional layers to extract hierarchical features from the input images.
+
+**Flatten:** Converts the 2D feature maps into a 1D vector.
+
+**Dense Layers:**
+- **Dense with SpectralNormalization:** Fully connected layers with spectral normalization.
+- **LeakyReLU:** Activation function.
+- **BatchNormalization:** Normalizes the output.
+- **Dropout:** Randomly drops units to prevent overfitting (rate=0.5).
+
+This sequence is repeated with decreasing number of units (600, 400, 200, 20) to progressively reduce the dimensionality.
+
+**Output Layer:**
+- **Dense with SpectralNormalization:** Final dense layer with a single unit and sigmoid activation to output a probability.
+
+**Compilation:**
+- **Adam Optimizer:** Optimizes the model with a learning rate of 0.0001 and beta_1 of 0.5.
+- **Binary Crossentropy Loss:** Measures the difference between the predicted and actual labels.
+- **Accuracy Metric:** Evaluates the model's performance.
+
+Each layer and technique used in this architecture serves to improve the model's ability to learn and generalize from the data while preventing overfitting and ensuring stable training.
+
+### Generator
+
+The generator neural network architecture in the provided code is designed to generate images from latent vectors and class labels. Here's a summary of its architecture and the purpose of each layer:
+
+**Inputs:**
+- **Latent Input:** Shape (100) for the latent vector.
+- **Label Input:** Shape (1) for class labels.
+
+**Latent Branch:**
+- **Dense with SpectralNormalization:** Fully connected layer with spectral normalization to stabilize training, outputting a vector of size (128 * 3 * 3).
+- **LeakyReLU:** Activation function with a small slope for negative values (alpha=0.2).
+- **BatchNormalization:** Normalizes the output to improve training stability.
+- **Reshape:** Reshapes the dense output to (3, 3, 128).
+
+**Label Branch:**
+- **Embedding:** Converts class labels into dense vectors of dimension 50.
+- **Dense with SpectralNormalization:** Fully connected layer with spectral normalization, outputting a vector of size (3 * 3).
+- **LeakyReLU:** Activation function.
+- **BatchNormalization:** Normalizes the output.
+- **Reshape:** Reshapes the dense output to (3, 3, 1).
+
+**Merge Branches:**
+- **Concatenate:** Merges the latent branch and label branch along the channel dimension.
+
+**Convolutional Layers:**
+- **Conv2DTranspose with SpectralNormalization:** Applies transposed convolution with spectral normalization to upsample the feature maps.
+- **LeakyReLU:** Activation function.
+- **BatchNormalization:** Normalizes the output.
+
+This sequence is repeated with additional transposed convolutional layers to progressively upsample the feature maps to the desired image size.
+
+**Output Layer:**
+- **Conv2D with SpectralNormalization:** Final convolutional layer with a single output channel and sigmoid activation to generate the image.
+
+Each layer and technique used in this architecture serves to improve the model's ability to generate realistic images while ensuring stable training and preventing overfitting.
+
 ## Model Evaluation
 
 Evaluating a GAN throughout the training is typically trickier than a standard image recognition or image generation project. This is because GANs involve two models (the Generator and the Discriminator) that are trained simultaneously in a competitive setting, making it challenging to assess their performance independently.
