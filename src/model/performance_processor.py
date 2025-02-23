@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import csv
 from keras.models import Model
@@ -32,7 +33,7 @@ class PerformanceProcessor:
         )
 
         [X_fake, X_fake_labels], y_fake = self.sample_processor.fake_samples(
-            generator_model, n_samples
+            generator_model, latent_dim, n_samples
         )
         _, acc_fake = discriminator_model.evaluate(
             [X_fake, X_fake_labels], y_fake, verbose=0
@@ -63,11 +64,14 @@ class PerformanceProcessor:
     ) -> None:
         """Save the performance of the discriminator to a CSV file."""
         csv_path = f"{self.save_dir}/Discriminator_Evaluation.csv"
+        file_exists = os.path.isfile(csv_path)
         with open(csv_path, "a", newline="") as csvfile:
             writer = csv.DictWriter(
                 csvfile,
                 fieldnames=["Epoch", "Acc_Real", "Acc_Fake", "G_Loss", "D_Loss"],
             )
+            if not file_exists:
+                writer.writeheader()
             writer.writerow(
                 {
                     "Epoch": epoch + 1,

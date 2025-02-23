@@ -61,7 +61,9 @@ class GANTrainer:
 
     def _train_generator(self) -> None:
         """Train the generator model."""
-        [X_gan, X_gan_labels] = self.sample_processor.latent_points(self.n_batch)
+        [X_gan, X_gan_labels] = self.sample_processor.latent_points(
+            self.n_batch, self.latent_dim
+        )
         y_gan = np.ones((self.n_batch, 1))
 
         self.g_loss, _ = self.gan_model.train_on_batch([X_gan, X_gan_labels], y_gan)

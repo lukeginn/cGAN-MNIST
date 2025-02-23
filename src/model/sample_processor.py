@@ -1,5 +1,7 @@
 import numpy as np
 from keras.models import Model
+
+# from keras.utils import to_categorical
 from dataclasses import dataclass
 from typing import Tuple, List
 
@@ -35,7 +37,11 @@ class SampleProcessor:
     ) -> Tuple[List[np.ndarray], np.ndarray]:
         """Generate a batch of fake samples using the generator model."""
         # generate points in latent space
-        x_input, labels = self.latent_points(latent_dim, n_samples)
+        x_input, labels = self.latent_points(n_samples, latent_dim)
+
+        ## one-hot encode labels
+        # labels = to_categorical(labels, num_classes=10)
+
         # predict outputs
         X = generator_model.predict([x_input, labels])
         # create 'fake' class labels (0)

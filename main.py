@@ -1,3 +1,4 @@
+from src.utils.check_gpu import check_gpu
 from src.data.data_reader import DataReader
 from src.data.data_processor import DataProcessor
 from src.model.sample_processor import SampleProcessor
@@ -7,10 +8,12 @@ from src.model.generator import Generator
 from src.model.gan_compiler import GANCompiler
 from src.model.gan_trainer import GANTrainer
 
+physical_devices = check_gpu()
+
 data_reader = DataReader()
 data_processor = DataProcessor()
 sample_processor = SampleProcessor()
-performance_processor = PerformanceProcessor(sample_processor, "output")
+performance_processor = PerformanceProcessor(sample_processor, "outputs")
 discriminator = Discriminator()
 generator = Generator(latent_dim=100)
 
