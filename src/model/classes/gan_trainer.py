@@ -17,6 +17,9 @@ class GANTrainer:
     start_epoch: int = 0
     num_epochs: int = 100
     num_batch: int = 256
+    learning_rate_decay_run: bool = True
+    learning_rate_decay_rate: float = 0.8
+    learning_rate_decay_epochs: int = 10
 
     def train_model(self) -> None:
         """Train the GAN model."""
@@ -40,6 +43,10 @@ class GANTrainer:
                 self.labels,
                 self.latent_dim,
             )
+
+            # Update learning rate
+            new_lr = self._scheduler(epoch, self.gan_model.optimizer.lr.numpy())
+            self._update_learning_rate(new_lr)
 
     def get_models(self) -> Tuple[Model, Model, Model]:
         """Return the generator, discriminator, and GAN models."""
@@ -67,3 +74,14 @@ class GANTrainer:
         y_gan = np.ones((self.num_batch, 1))
 
         self.g_loss, _ = self.gan_model.train_on_batch([X_gan, X_gan_labels], y_gan)
+
+    def _scheduler(self, epoch, lr):
+        if self.learning_rate_decay_run:
+            if epoch % self.learning_rate_decay_epoch == 0 and epoch != 0:
+                return lr * self.learning_rate_decay_rate
+        return lr
+
+    def _update_learning_rate(self, new_lr: float) -> None:
+        """Update the learning rate for all models."""
+        self.discriminator_model.optimizer.lr.assign(new_lr)
+        self.gan_model.optimizer.lr.assign(new_lr)

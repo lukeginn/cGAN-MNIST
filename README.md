@@ -143,6 +143,14 @@ This sequence is repeated with additional transposed convolutional layers to pro
 
 Each layer and technique used in this architecture serves to improve the model's ability to generate realistic images while ensuring stable training and preventing overfitting.
 
+### Label Smoothing
+
+Label smoothing was used as a regularization technique to improve the generalization of the discriminator in the GAN. Instead of using hard labels (0 for fake and 1 for real), label smoothing assigns a range of values close to 0 and 1. This helps to prevent the discriminator from becoming overconfident and provides a smoother gradient for the generator to learn from.
+
+### Learning Rate Decay
+
+Learning rate decay is implemented to gradually reduce the learning rate of the Adam optimizer during training. This helps in stabilizing the training process and achieving better convergence. In this project, the learning rate for both the discriminator and the generator is updated periodically to ensure that the models do not overshoot the optimal weights and to fine-tune the learning as training progresses.
+
 ## Model Evaluation
 
 Evaluating a GAN throughout the training is typically trickier than a standard image recognition or image generation project. This is because GANs involve two models (the Generator and the Discriminator) that are trained simultaneously in a competitive setting, making it challenging to assess their performance independently.

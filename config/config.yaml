@@ -16,6 +16,10 @@ model:
   label_smoothing:
     run: True
     degree: 0.1
+  learning_rate_decay:
+    run: True
+    rate: 0.8
+    epoch: 10
 
 discriminator:
   LeakyReLU_alpha: 0.2

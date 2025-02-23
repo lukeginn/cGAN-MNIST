@@ -78,6 +78,9 @@ gan_trainer = GANTrainer(
     start_epoch=config.model.starting_epoch,
     num_epochs=config.model.epochs,
     num_batch=config.model.num_batches,
+    learning_rate_decay_run=config.model.learning_rate_decay.run,
+    learning_rate_decay_rate=config.model.learning_rate_decay.rate,
+    learning_rate_decay_epoch=config.model.learning_rate_decay.epoch,
 )
 gan_trainer.train_model()
 generator_model, discriminator_model, gan_model = gan_trainer.get_models()
