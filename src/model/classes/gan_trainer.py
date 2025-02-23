@@ -2,6 +2,7 @@ import numpy as np
 from keras.models import Model
 from dataclasses import dataclass, field
 from typing import Tuple, Any
+from src.utils.tensorboard import setup_tensorboard, log_metrics_to_tensorboard
 
 
 @dataclass
@@ -19,12 +20,14 @@ class GANTrainer:
     num_batch: int = 256
     learning_rate_decay_run: bool = True
     learning_rate_decay_rate: float = 0.8
-    learning_rate_decay_epochs: int = 10
+    learning_rate_decay_epoch: int = 10
 
     def train_model(self) -> None:
         """Train the GAN model."""
         bat_per_epo = int(self.images.shape[0] / self.num_batch)
         half_batch = int(self.num_batch / 2)
+
+        tensorboard_callback, file_writer = setup_tensorboard()
 
         for epoch in range(self.start_epoch, self.num_epochs):
             for batch in range(bat_per_epo):
@@ -47,6 +50,15 @@ class GANTrainer:
             # Update learning rate
             new_lr = self._scheduler(epoch, self.gan_model.optimizer.lr.numpy())
             self._update_learning_rate(new_lr)
+
+            log_metrics_to_tensorboard(
+                epoch,
+                self.g_loss,
+                self.d_loss,
+                new_lr,
+                tensorboard_callback,
+                file_writer,
+            )
 
     def get_models(self) -> Tuple[Model, Model, Model]:
         """Return the generator, discriminator, and GAN models."""
